@@ -1,10 +1,9 @@
 use nalgebra::DVector;
 use plotters::prelude::*;
 
-pub fn show(file_name: &str, v: &DVector<i64>) {
-    let w = 7;
-    let h = 7;
-
+pub fn show(file_name: &str, v: &DVector<i64>, w: usize, h: usize) {
+    // let w = 7;
+    // let h = 7;
 
 
     let root = SVGBackend::new(file_name, (1024, 768)).into_drawing_area();
@@ -36,9 +35,9 @@ pub fn show(file_name: &str, v: &DVector<i64>) {
     assert_eq!(matrix.len(), h);
     assert_eq!(matrix[0].len(), w);
 
-    for i in 0..7 {
-        for j in 0..7 {
-            matrix[i][j] = match v[i * 7 + j] {
+    for i in 0..h {
+        for j in 0..w {
+            matrix[i][j] = match v[i * w + j] {
                 1 => 1,
                 _ => 0,
             };

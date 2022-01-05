@@ -23,42 +23,61 @@ fn read_img(path: &str) -> DVector<i64> {
     DVector::from_vec(v)
 }
 
+
 fn main() {
     let letter_a = dvector![
-        1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1,
-        -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1
+        1, 1, 1, 1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, 1, 1, -1,
+        -1, -1, 1, 1, -1, -1, -1, 1
     ];
 
-    let letter_b = dvector![
-        1, -1, 1, 1, 1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1,
-        -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1
-    ];
-    let letter_c = dvector![
+    let letter_z = dvector![
         1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1,
-        1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, 1, 1, -1, -1
+        -1, -1, -1, -1, 1, 1, 1, 1, 1, 1
     ];
 
-    let letter_d = dvector![
-        1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1, -1,
-        -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1
+    let letter_o = dvector![
+        1, 1, 1, 1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1,
+        -1, -1, -1, 1, 1, 1, 1, 1, 1
     ];
+
+    let letter_actual_c = dvector![
+        1, 1, 1, 1, 1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1,
+        1, -1, -1, -1, -1, 1, 1, 1, 1, 1
+    ];
+
+    let letter_u = dvector![
+        1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1,
+        1, -1, -1, -1, 1, 1, 1, 1, 1, 1
+    ];
+
+    let magled_letter_o = dvector![
+        1, -1, 1, -1, 1, 1, 1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1, 1, -1, -1, -1, 1,
+        1, -1, 1, -1, 1, 1, 1, 1, 1, 1
+    ];
+
 
     let input_sz = &letter_a.len();
 
     let mut network = network::Network::with_random_weights(*input_sz);
 
-    let input_imgs = vec![&letter_a, &letter_b, &letter_c, &letter_d];
+    let input_imgs = vec![
+        &letter_a,
+        &letter_a,
+        &letter_z,
+        &letter_o,
+        &letter_actual_c,
+        &letter_u,
+    ];
     network.write(&input_imgs);
 
     let mut last_output = DVector::from_element(*input_sz, rngs::StdRng::from_entropy().gen());
-    let mut output = network.read(&letter_a);
+    let mut output = network.read(&magled_letter_o);
 
     let mut i = 0;
     while last_output != output {
         last_output = output.clone();
         output = network.read(&last_output);
 
-        eprintln!("[info] Iteration: {}", i);
         i += 1;
     }
 
@@ -68,7 +87,8 @@ fn main() {
     }
 
     input_imgs.into_iter().enumerate().for_each(|(idx, img)| {
-        show(format!("output/{}.svg", idx).as_str(), img);
+        show(format!("output/{}.svg", idx).as_str(), img, 5, 7);
     });
-    show("output/out.svg", &output);
+    show("output/mangled_o.svg", &magled_letter_o, 5, 7);
+    show("output/out.svg", &output, 5, 7);
 }
